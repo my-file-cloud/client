@@ -19,11 +19,15 @@ WORKDIR /build
 COPY . .
 
 # Cache the Cargo registry and build artifacts for incremental recompilation.
-# dist/ is written to the regular filesystem and is available to the next stage.
+# Since dioxus 0.6, dx build outputs to target/dx/<crate>/release/web/public/
+# instead of dist/. Because target/ is a cache mount (not persisted into the
+# image layer), we copy the output to /build/dist within the same RUN command
+# while the mount is still active.
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/usr/local/cargo/git \
     --mount=type=cache,target=/build/target \
-    dx build --platform web --release
+    dx build --platform web --release && \
+    cp -r /build/target/dx/my-file-cloud-client/release/web/public /build/dist
 
 # ── Stage 2: serve ──────────────────────────────────────────────────────────
 FROM nginx:alpine
