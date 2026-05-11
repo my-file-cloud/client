@@ -104,7 +104,15 @@ jobs:
 
       - name: Locate APK
         run: |
-          APK=$(find . -path '*/outputs/apk/release/*.apk' | head -1)
+          # dioxus 0.6+ places the APK under target/dx/<crate>/release/android/
+          # then into the standard Gradle output structure beneath that.
+          APK=$(find target/dx -name '*.apk' -not -path '*/debug/*' 2>/dev/null | head -1)
+          if [ -z "$APK" ]; then
+            echo "No release APK found. All APK files present:"
+            find . -name '*.apk' 2>/dev/null || echo "(none)"
+            exit 1
+          fi
+          echo "Found APK: $APK"
           echo "APK_PATH=$APK" >> $GITHUB_ENV
 
       - name: Upload APK artifact
@@ -112,6 +120,7 @@ jobs:
         with:
           name: android-apk
           path: ${{ env.APK_PATH }}
+          if-no-files-found: error
 
   release-android:
     name: Release Android APK
