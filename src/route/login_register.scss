@@ -1,0 +1,19 @@
+.container {
+  background-color: #111;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: fit-content;
+  background-color: #181818;
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 25px;
+}
