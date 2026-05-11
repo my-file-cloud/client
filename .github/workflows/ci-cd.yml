@@ -88,16 +88,17 @@ jobs:
         id: cache-dx
         with:
           path: ~/.cargo/bin/dx
-          key: dioxus-cli-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          key: dioxus-cli-0.7.3-${{ runner.os }}
 
       - name: Install Dioxus CLI
         if: steps.cache-dx.outputs.cache-hit != 'true'
-        run: cargo install dioxus-cli
+        run: cargo install dioxus-cli --version "=0.7.3"
+
+      - name: Set ANDROID_NDK_HOME
+        run: echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/26.1.10909125" >> $GITHUB_ENV
 
       - name: Build Android APK
         run: dx build --platform android --release
-        env:
-          ANDROID_NDK_HOME: ${{ env.ANDROID_NDK_LATEST_HOME }}
 
       - name: Locate APK
         run: |
