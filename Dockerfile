@@ -12,7 +12,7 @@ RUN rustup target add wasm32-unknown-unknown
 # The compiled dx binary is baked into the image layer as normal.
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/usr/local/cargo/git \
-    cargo install dioxus-cli --version "=0.7.3"
+    cargo install dioxus-cli --version "=0.7.3" --locked
 
 WORKDIR /build
 
