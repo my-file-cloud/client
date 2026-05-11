@@ -50,7 +50,7 @@ pub fn DirectoryView(path: ReadSignal<Vec<String>>, items: Vec<StorageContentDTO
                     format!("{}/{}", path().join("/"), item.name.clone())
                 };
                 
-                let download_path = format!("https://{}/download/{file_path}", client.base_url);
+                let download_path = format!("{}/download/{file_path}", client.base_url);
                 
                 let is_selected = selected_item().is_some_and(|item| item == file_path);
                 
