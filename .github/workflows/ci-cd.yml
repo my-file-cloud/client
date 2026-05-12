@@ -90,9 +90,24 @@ jobs:
           path: ~/.cargo/bin/dx
           key: dioxus-cli-0.7.7-${{ runner.os }}
 
+      - name: Install cargo-binstall
+        if: steps.cache-dx.outputs.cache-hit != 'true'
+        uses: cargo-bins/cargo-binstall@main
+
       - name: Install Dioxus CLI
         if: steps.cache-dx.outputs.cache-hit != 'true'
-        run: cargo install dioxus-cli --version "=0.7.7" --locked
+        run: cargo binstall dioxus-cli --version "=0.7.7" --no-confirm
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-0.7.7-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-0.7.7-
+            gradle-${{ runner.os }}-
 
       - name: Set ANDROID_NDK_HOME
         run: echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/26.1.10909125" >> $GITHUB_ENV
@@ -100,7 +115,7 @@ jobs:
       - name: Build Android APK
         env:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
-        run: dx build --platform android --release
+        run: dx build --platform android --release --target aarch64-linux-android
 
       - name: Locate APK
         run: |
