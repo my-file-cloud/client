@@ -147,25 +147,29 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           name: android-apk
           path: apk/
 
-      # Delete the previous nightly release so we can replace it cleanly
-      - name: Delete existing nightly release
-        run: gh release delete nightly --cleanup-tag --yes || true
+      # Delete the previous latest release so we can replace it cleanly
+      - name: Delete existing latest release
+        run: gh release delete latest --cleanup-tag --yes || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish nightly GitHub Release
+      - name: Publish latest GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: nightly
-          name: "Android (Latest)"
-          body: "Latest Android build from the main branch."
-          prerelease: true
-          make_latest: false
+          tag_name: latest
+          name: "Android – Latest"
+          body: |
+            Latest Android build from the `main` branch.
+            Commit: ${{ github.sha }}
+          prerelease: false
+          make_latest: true
           files: apk/*.apk
 
   deploy:
