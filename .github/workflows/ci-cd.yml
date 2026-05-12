@@ -106,9 +106,11 @@ jobs:
         run: |
           # dioxus 0.6+ places the APK under target/dx/<crate>/release/android/
           # then into the standard Gradle output structure beneath that.
-          APK=$(find target/dx -name '*.apk' -not -path '*/debug/*' 2>/dev/null | head -1)
+          # Even with --release, Dioxus/Gradle produces a debug-signed APK
+          # (app-debug.apk) because no release keystore is configured.
+          APK=$(find . -path '*/build/outputs/apk/*/*.apk' 2>/dev/null | head -1)
           if [ -z "$APK" ]; then
-            echo "No release APK found. All APK files present:"
+            echo "No APK found. All APK files present:"
             find . -name '*.apk' 2>/dev/null || echo "(none)"
             exit 1
           fi
